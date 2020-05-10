@@ -10,19 +10,19 @@ using System.Windows.Forms;
 
 namespace ProxyDesingPatternLogin
 {
-    public partial class Form1 : Form
+    public partial class Form3 : Form
     {
-        public Form1()
+        public Form3()
         {
-            this.FormBorderStyle = FormBorderStyle.FixedSingle;
             InitializeComponent();
         }
 
         private void button_WOC1_Click(object sender, EventArgs e)
         {
-            IUser user = new ProxyUser(new UserInfo(textBox1.Text, textBox2.Text));
-            user.AllowAccess(this);
+            this.Hide();
+            Form1 f1 = new Form1();
+            f1.ShowDialog();
+            this.Close();
         }
-
     }
 }
