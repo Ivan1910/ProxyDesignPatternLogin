@@ -11,15 +11,48 @@ using System.Data.SqlClient;
 
 namespace ProxyDesingPatternLogin
 {
-    //Real object
-    public class User : IUser
+    public class User
     {
-        public void AllowAccess(Form form)
+        public string Username { get; set; }
+        public bool HasAccess { get; private set; }
+
+        public User(string username,string password)
         {
-            form.Hide();
-            Form2 f2 = new Form2();
-            f2.ShowDialog();
-            form.Close();
+            this.Username = username;
+                if (CheckIfUserIsRegistered(username,password))
+                {
+                    this.HasAccess = true;
+            }
+                else
+                {
+                    this.HasAccess = false;
+            }
+        }
+
+        private Boolean CheckIfUserIsRegistered(string username,string password)
+        {
+            Boolean userFound;
+            using (SqlConnection con = new SqlConnection(@"Data Source = DESKTOP-0DTMDR1\SQLEXPRESS;Server=DESKTOP-0DTMDR1\SQLEXPRESS;
+            Initial Catalog = seminarskiRadDB; User ID = dbowner; Password = 12345678"))
+            {
+                SqlCommand cmd = new SqlCommand("login", con);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@username", username);
+                cmd.Parameters.AddWithValue("@password", password);
+
+                SqlParameter outputParameter = new SqlParameter();
+                outputParameter.ParameterName = "@user_found";
+                outputParameter.SqlDbType = System.Data.SqlDbType.Bit;
+                outputParameter.Direction = System.Data.ParameterDirection.Output;
+                cmd.Parameters.Add(outputParameter);
+
+                con.Open();
+                cmd.ExecuteNonQuery();
+
+                userFound = Convert.ToBoolean(outputParameter.Value);
+            }
+            return userFound;
         }
     }
 }
